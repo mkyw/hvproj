@@ -33,7 +33,7 @@ struct ContentView: View {
                     
                     let reversedGeoLocation = ReversedGeoLocation(with: placemark)
                     
-                    address = "\(reversedGeoLocation.streetNumber) \(reversedGeoLocation.streetName), \(reversedGeoLocation.city), \(reversedGeoLocation.state)."
+                    address = "\(reversedGeoLocation.streetNumber) \(reversedGeoLocation.streetName), \(reversedGeoLocation.city), \(reversedGeoLocation.state), \(reversedGeoLocation.zipCode)"
                     mapSearch.searchTerm = address
                     isFocused = false
                     

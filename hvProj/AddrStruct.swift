@@ -72,7 +72,6 @@ struct ReversedGeoLocation {
         return """
         \(streetNumber) \(streetName),
         \(city), \(state) \(zipCode)
-        \(country)
         """
     }
     

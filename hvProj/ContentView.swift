@@ -44,7 +44,7 @@ struct ContentView: View {
     
     //  Function to send the address to the backend
     func sendAddressToBackend(address: String) {
-        guard let url = URL(string: "http://localhost:8000/address") else {
+        guard let url = URL(string: "http://localhost:8000") else {
             print("Invalid URL")
             return
         }

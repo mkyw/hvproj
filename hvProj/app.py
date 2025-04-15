@@ -70,35 +70,35 @@ class Address(BaseModel):
     address: str
 
 @app.post("/address")
+@app.post("/address")
 async def receive_address(address: Address):
-    property_data = get_property_data(address.address)
-    
     try:
-        # Safe access for taxAssessments and propertyTaxes using get() method
-        tax_assessments = property_data[0].get("taxAssessments", {})
-        property_taxes = property_data[0].get("propertyTaxes", {})
+        property_data = get_property_data(address.address)
+#        print("DEBUG response from RentCast:", property_data)
+        
+        if not property_data or not isinstance(property_data, list):
+            raise HTTPException(status_code=404, detail="No property data found for the given address")
+        
+        property_info = property_data[0]  # Safely access first result
+        
+        tax_assessments = property_info.get("taxAssessments", {})
+        property_taxes = property_info.get("propertyTaxes", {})
         
         if not tax_assessments:
             raise KeyError("Missing 'taxAssessments' data")
         if not property_taxes:
             raise KeyError("Missing 'propertyTaxes' data")
         
-        # Find the latest year in taxAssessments and propertyTaxes
         latest_year_tax_assessments = get_latest_year(tax_assessments)
         latest_year_property_taxes = get_latest_year(property_taxes)
         
-        # Get the property value and taxes from the latest year
         property_value = tax_assessments[latest_year_tax_assessments]["value"]
         property_tax = property_taxes[latest_year_property_taxes]["total"]
-        
-        # Get square footage
-        square_footage = property_data[0]["squareFootage"]
-        
-        # Get HOA fees (if available, otherwise set to 0)
-        hoa_fees = property_data[0].get("hoa", {}).get("fee", 0)
-    
-    except (KeyError, IndexError) as e:
-        raise Exception(f"Error retrieving property data: {str(e)}")
+        square_footage = property_info["squareFootage"]
+        hoa_fees = property_info.get("hoa", {}).get("fee", 0)
+
+    except (KeyError, IndexError, TypeError) as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving property data: {str(e)}")
     
     # Down payment percentage and mortgage calculation
     down_payment_percentage = 0.20  # 20% down payment
